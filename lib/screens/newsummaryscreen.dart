@@ -60,7 +60,7 @@ class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
                 const Spacer(),
                 Center(
                   child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.pushReplacementNamed(context,'/'),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurple,
                           foregroundColor: Colors.white),

@@ -25,7 +25,7 @@ class _HomeScreenState extends State<Homescreen> {
   }
   void navigateToNextPage() {
     String link = _textEditingController.text.trim();
-    if (_textEditingController.text.isNotEmpty) {
+    if (_textEditingController.text.isNotEmpty && isValidYouTubeLink(link)) {
       setState(()=>errormessage = null);
       Navigator.pushReplacementNamed(
         context,
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<Homescreen> {
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        elevation: 0,
+        // elevation: 0,
       ),
       body: Stack(
         children: [
@@ -62,17 +62,14 @@ class _HomeScreenState extends State<Homescreen> {
             child:
                 Image.asset("assets/images/background.png", fit: BoxFit.cover),
           ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                      left: 10.0, top: 30.0, right: 0.0, bottom: 0.0),
-                  child: Image.asset(
-                    'assets/images/bg.png',
-                    height: 380,
-                  ),
+          SafeArea(
+            child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+              child: Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+                Image.asset(
+                  'assets/images/bg.png',
+                  height: 380,
                 ),
                 // const SizedBox(height: 8),
                 Text(
@@ -118,7 +115,7 @@ class _HomeScreenState extends State<Homescreen> {
                   const SizedBox(height: 10,),
                   ElevatedButton(onPressed: navigateToNextPage, child: const Text("Proceed"))
                 ]
-              ],
+    ),
             ),
           )
         ],
