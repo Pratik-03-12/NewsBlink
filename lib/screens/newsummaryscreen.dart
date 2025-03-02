@@ -10,7 +10,7 @@ class NewsSummaryScreen extends StatefulWidget {
 
 class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
   String category = "Loading..";
-  String summary = "Fetching Summary...";
+  String summary = "Fetching Data...";
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
                 const Spacer(),
                 Center(
                   child: ElevatedButton(
-                      onPressed: () => Navigator.pushReplacementNamed(context,'/'),
+                      onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurple,
                           foregroundColor: Colors.white),
@@ -124,7 +124,7 @@ class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
           ),
         ),
         const SizedBox(height: 5),
-        Text(summary, style: const TextStyle(fontSize: 16)),
+        Text(summary, style: const TextStyle(fontSize: 17)),
       ],
     );
   }
