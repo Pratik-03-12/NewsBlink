@@ -13,6 +13,20 @@ class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
   String summary = "Fetching Data...";
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Extract arguments from the previous screen
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+    if (args != null) {
+      setState(() {
+        category = args['category'] ?? "Unknown Category";
+        summary = args['summary'] ?? "No Summary Available";
+      });
+    }
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -45,7 +59,7 @@ class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 IconButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.pushReplacementNamed(context,'/'),
                     icon: const Icon(
                       Icons.arrow_back,
                       size: 28,
@@ -60,7 +74,7 @@ class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
                 const Spacer(),
                 Center(
                   child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.pushReplacementNamed(context,'/'),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurple,
                           foregroundColor: Colors.white),
