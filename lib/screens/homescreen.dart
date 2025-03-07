@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:newsblink/screens/newsummaryscreen.dart';
 import 'package:newsblink/widgets/paste_link_button.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,7 +14,6 @@ class Homescreen extends StatefulWidget {
 class _HomeScreenState extends State<Homescreen> {
   bool showTextField = false;
   String? errormessage;
-  bool _isLoading = false;
   final TextEditingController _textEditingController = TextEditingController();
 
   bool isValidYouTubeLink(String url) {
@@ -115,7 +113,7 @@ class _HomeScreenState extends State<Homescreen> {
                       left: 10.0, top: 50.0, right: 0.0, bottom: 0.0),
                   child: Image.asset(
                     'assets/images/bg.png',
-                    height: 380,
+                    height: 285,
                   ),
                 ),
                 // const SizedBox(height: 8),
@@ -125,13 +123,13 @@ class _HomeScreenState extends State<Homescreen> {
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
-                      fontSize: 52),
+                      fontSize: 50),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   "Stay informed in a snap – get your news\ncategory and summary instantly!",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.arvo(fontSize: 16, color: Colors.white),
+                  style: GoogleFonts.arvo(fontSize: 14, color: Colors.white),
                 ),
                 const SizedBox(height: 30),
                 Padding(
@@ -164,7 +162,12 @@ class _HomeScreenState extends State<Homescreen> {
                   ),
                   ElevatedButton(
                       onPressed: navigateToNextPage,
-                      child: _isLoading?CircularProgressIndicator(color: Colors.white,):Text("Proceed"),)
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10)
+                      ),
+                      child:Text("Proceed"),)
                 ]
               ],
             ),
