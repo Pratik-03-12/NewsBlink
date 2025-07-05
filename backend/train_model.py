@@ -4,8 +4,9 @@ from collections import Counter
 from clustering import train_agnes_clustering
 
 # Paths
-DATASET_PATH = "backend/datasets/Research_Project_Dataset_2.xlsx"
+DATASET_PATH = "backend/datasets/Research_project_Dataset_1.xlsx"
 MODEL_PATH = "backend/models/agnes_model.pkl"
+# MODEL_PATH = "backend/models/spectral_model.pkl"
 CATEGORY_MAPPING_PATH = "backend/models/cluster_category_mapping.pkl"
 
 # Load dataset
@@ -81,3 +82,4 @@ with open(CATEGORY_MAPPING_PATH, "wb") as f:
     pickle.dump(cluster_to_category, f)
 
 print("AGNES Model Training & Category Mapping Completed & Saved!")
+# print("Spectral Model Training & Category Mapping Completed & Saved!")

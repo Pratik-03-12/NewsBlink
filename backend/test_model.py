@@ -1,7 +1,7 @@
 import pickle
-from clustering import classify_new_summary
-from preprocessing import clean_text  # Ensure text is preprocessed before prediction
-from utils import get_category_name
+from .clustering import classify_new_summary
+from .preprocessing import clean_text  # Ensure text is preprocessed before prediction
+from .utils import get_category_name
 
 # Paths
 MODEL_PATH = "backend/models/agnes_model.pkl"
@@ -9,7 +9,7 @@ CATEGORY_MAPPING_PATH = "backend/models/cluster_category_mapping.pkl"
 
 # Load trained AGNES model
 with open(MODEL_PATH, "rb") as f:
-    agnes_model = pickle.load(f)
+    spectral_model = pickle.load(f)
 
 # Load category mapping
 with open(CATEGORY_MAPPING_PATH, "rb") as f:
