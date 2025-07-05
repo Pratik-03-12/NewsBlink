@@ -9,9 +9,31 @@ class NewsSummaryScreen extends StatefulWidget {
 }
 
 class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
-  String category = "Loading..";
-  String summary = "Fetching Data...";
+  String category = "";
+  String summary = "";
+  bool isLoading = true;
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Extract arguments from the previous screen
+    Future.delayed(const Duration(seconds: 2),()
+    {
+      final args = ModalRoute
+          .of(context)!
+          .settings
+          .arguments as Map<String, dynamic>?;
+
+      if (args != null) {
+        setState(() {
+          category = args['category'] ?? "Unknown Category";
+          summary = args['summary'] ?? "No Summary Available";
+          isLoading = false;
+        });
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,11 +63,11 @@ class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
           SafeArea(
               child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
+            child:isLoading?const Center(child: CircularProgressIndicator(color: Colors.deepPurple,)):Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 IconButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.pushReplacementNamed(context,'/'),
                     icon: const Icon(
                       Icons.arrow_back,
                       size: 28,
@@ -60,7 +82,7 @@ class _NewsSummaryScreenState extends State<NewsSummaryScreen> {
                 const Spacer(),
                 Center(
                   child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.pushReplacementNamed(context,'/'),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurple,
                           foregroundColor: Colors.white),

@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from .preprocessing import extract_youtube_transcript, summarize_text, clean_text
 from .clustering import classify_new_summary, load_agnes_model, compute_confidence_score #, evaluate_clustering
 from .utils import get_category_name
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 import os
 import pickle
@@ -19,6 +20,14 @@ logging.basicConfig(
 )
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (change for security in production)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
+
 
 # Load AGNES model at startup
 agnes_model = load_agnes_model()

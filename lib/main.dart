@@ -13,13 +13,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
       title: 'News Blink',
-      // theme: ThemeData(
-      //
-      // ),
       //  home: NewsSummaryScreen(),
-      home: Homescreen(),
-      routes: {'/newssummaryscreen': (context) => const NewsSummaryScreen()},
+      routes: {'/': (context)=>const Homescreen(),
+      '/newssummaryscreen': (context)=> const NewsSummaryScreen()
+      }
     );
   }
 }
