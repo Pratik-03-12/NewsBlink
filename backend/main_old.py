@@ -1,8 +1,8 @@
 ### main.py
 
-from preprocessing import extract_youtube_transcript, summarize_text, clean_text
-from clustering import classify_new_summary, evaluate_clustering
-from utils import get_category_name
+from .preprocessing import extract_youtube_transcript, summarize_text, clean_text
+from .clustering import classify_new_summary
+from .utils import get_category_name
 
 def process_video(youtube_url):
     """Full pipeline for processing a YouTube video link."""
