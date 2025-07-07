@@ -8,6 +8,8 @@ import logging
 import os
 import pickle
 import pandas as pd
+from gtts import gTTS
+import uuid
 from .retrain_utils import retrain_model, DATASET_LOCK, DATASET_PATH
 
 logging.basicConfig(
@@ -67,6 +69,20 @@ def process_video(request: VideoRequest, background_tasks: BackgroundTasks):
         print(f"=== SUMMARY GENERATED: {summary} ===")
         logging.info(f"Summary generated: {summary}")
         cleaned_summary = clean_text(summary)
+         # Extract the summary text
+        summary = cleaned_summary
+        
+       # Folder where audio will be saved (inside current directory)
+        output_folder = os.path.join(os.getcwd(), "generated_audio")
+        os.makedirs(output_folder, exist_ok=True)
+
+        # Unique file name
+        file_name = f"summary_{uuid.uuid4().hex[:8]}.mp3"
+        file_path = os.path.join(output_folder, file_name)
+
+        # Convert text to speech
+        tts = gTTS(text=summary, lang='en')
+        tts.save(file_path)
 
         if not agnes_model:
             raise HTTPException(status_code=500, detail="AGNES model is not trained. Please train it first!")
