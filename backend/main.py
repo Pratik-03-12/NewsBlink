@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from .preprocessing import extract_youtube_transcript, summarize_text, clean_text
 from .clustering import classify_new_summary, load_agnes_model, compute_confidence_score #, evaluate_clustering
@@ -8,6 +9,8 @@ import logging
 import os
 import pickle
 import pandas as pd
+from gtts import gTTS
+import uuid
 from .retrain_utils import retrain_model, DATASET_LOCK, DATASET_PATH
 
 logging.basicConfig(
@@ -20,6 +23,14 @@ logging.basicConfig(
 )
 
 app = FastAPI()
+
+# Mount static folder for serving audio
+app.mount("/static", StaticFiles(directory="static"), name="audio")
+
+# Ensure audio folder exists
+AUDIO_DIR = os.path.join("static", "audio")
+os.makedirs(AUDIO_DIR, exist_ok=True)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow all origins (change for security in production)
@@ -67,6 +78,19 @@ def process_video(request: VideoRequest, background_tasks: BackgroundTasks):
         print(f"=== SUMMARY GENERATED: {summary} ===")
         logging.info(f"Summary generated: {summary}")
         cleaned_summary = clean_text(summary)
+         # Extract the summary text
+        summary = cleaned_summary
+
+        # Always use the same file name
+        file_name = "summary.mp3"
+        file_path = os.path.join(AUDIO_DIR, file_name)
+
+        # Convert text to speech
+        tts = gTTS(text=summary, lang='en')
+        tts.save(file_path)
+        
+        #Return URL to frontend
+        audio_url = f"/static/audio/{file_name}"
 
         if not agnes_model:
             raise HTTPException(status_code=500, detail="AGNES model is not trained. Please train it first!")
@@ -154,6 +178,8 @@ def process_video(request: VideoRequest, background_tasks: BackgroundTasks):
         return {
             "summary": summary,
             "category": category,
+            "messege":"Audio generated successfully",
+            "audio_url":audio_url,
             "confidence_score": f"{confidence_score}%",
             "confidence_label": confidence_label,
             "confidence_explanation": confidence_explanation,
