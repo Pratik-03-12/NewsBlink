@@ -2,8 +2,12 @@ import pandas as pd
 import pickle
 from collections import Counter
 from threading import Lock
-from .clustering import train_agnes_clustering
-from .preprocessing import preprocess_for_clustering
+try:
+    from .clustering import train_agnes_clustering
+    from .modified_preprocessing import preprocess_for_clustering
+except ImportError:
+    from clustering import train_agnes_clustering
+    from modified_preprocessing import preprocess_for_clustering
 
 DATASET_PATH = "backend/datasets/Research_project_Dataset_1.xlsx"
 MODEL_PATH = "backend/models/agnes_model.pkl"
