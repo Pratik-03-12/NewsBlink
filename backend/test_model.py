@@ -1,12 +1,7 @@
 import pickle
-try:
-    from .clustering import classify_new_summary
-    from .modified_preprocessing import clean_text  # Ensure text is preprocessed before prediction
-    from .utils import get_category_name
-except ImportError:
-    from clustering import classify_new_summary
-    from modified_preprocessing import clean_text  # Ensure text is preprocessed before prediction
-    from utils import get_category_name
+from .clustering import classify_new_summary
+from .preprocessing import clean_text  # Ensure text is preprocessed before prediction
+from .utils import get_category_name
 
 # Paths
 MODEL_PATH = "backend/models/agnes_model.pkl"
