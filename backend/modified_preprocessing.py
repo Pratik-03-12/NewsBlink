@@ -98,21 +98,98 @@ def extract_youtube_transcript(video_url):
         else:
             return f"Transcript extraction failed: {error_msg}"
 
-def summarize_text(text, max_length=130):
-    """Summarizes extracted text."""
+def chunk_text(text: str, max_length: int = 600):
+    """Split text into chunks while preserving sentence boundaries."""
     try:
-        # For very long texts, truncate to avoid model limitations
-        max_input_length = 1024  # BART's maximum input length
-        if len(text) > max_input_length:
-            # Truncate text to fit model limits
-            text = text[:max_input_length]
-            print(f"=== DEBUG: Text truncated to {max_input_length} characters for summarization ===")
-        
-        summary = summarizer(text, max_length=max_length, min_length=50, do_sample=False)
-        return summary[0]['summary_text']
+        sentences = re.split(r'(?<=[.!?])\s+', text)
+        chunks = []
+        current_chunk = []
+        current_length = 0
+
+        for sentence in sentences:
+            sentence_length = len(sentence.split())
+            if current_length + sentence_length > max_length:
+                if current_chunk:
+                    chunks.append(" ".join(current_chunk))
+                current_chunk = [sentence]
+                current_length = sentence_length
+            else:
+                current_chunk.append(sentence)
+                current_length += sentence_length
+
+        if current_chunk:
+            chunks.append(" ".join(current_chunk))
+        return chunks
+    except Exception as e:
+        print(f"=== DEBUG: Error chunking text: {str(e)} ===")
+        return [text]
+
+
+def postprocess_summary(summary: str) -> str:
+    """Clean up the generated summary."""
+    summary = re.sub(r'\s+', ' ', summary)
+    summary = re.sub(r'\s+([.,!?])', r'\1', summary)
+    summary = re.sub(r'([.,!?])\s*([A-Z])', r'\1 \2', summary)
+    return summary.strip()
+
+
+def summarize_text(text, max_length=150, min_length=30):
+    """Summarizes extracted text using multi-chunk approach."""
+    try:
+        if not summarizer:
+            raise RuntimeError("Summarizer model not loaded")
+
+        # Split text into manageable chunks
+        chunks = chunk_text(text)
+        summaries = []
+        tokenizer = getattr(summarizer, "tokenizer", None)
+
+        for i, chunk in enumerate(chunks):
+            if len(chunk.split()) > 30:
+                print(f"=== DEBUG: Summarizing chunk {i+1}/{len(chunks)} ===")
+                try:
+                    # Adapt generation lengths to the chunk token length
+                    token_count = None
+                    if tokenizer is not None:
+                        tokenized = tokenizer(chunk, truncation=True)
+                        ids = tokenized.get("input_ids", [])
+                        if ids:
+                            # Handle both list[int] and list[list[int]]
+                            token_count = len(ids[0]) if isinstance(ids[0], list) else len(ids)
+
+                    # Choose conservative defaults if token_count unavailable
+                    if token_count is None:
+                        token_count = max(64, len(chunk.split()))
+
+                    adaptive_max_new = min(120, max(60, token_count // 2))
+                    adaptive_min = max(10, min(min_length, max(10, token_count // 3)))
+                    # Ensure min does not exceed max_new_tokens - 5
+                    adaptive_min = min(adaptive_min, max(10, adaptive_max_new - 5))
+
+                    summary = summarizer(
+                        chunk,
+                        max_new_tokens=adaptive_max_new,
+                        min_length=adaptive_min,
+                        do_sample=False,
+                        truncation=True
+                    )
+                    chunk_summary = postprocess_summary(summary[0]['summary_text'])
+                    summaries.append(chunk_summary)
+                except Exception as e:
+                    print(f"=== DEBUG: Error summarizing chunk {i+1}: {str(e)} ===")
+                    continue
+
+        if not summaries:
+            raise Exception("Failed to generate summary from any chunks")
+
+        final_summary = " ".join(summaries)
+        final_summary = postprocess_summary(final_summary)
+
+        print("=== DEBUG: Summary generated successfully ===")
+        return final_summary
+
     except Exception as e:
         print(f"=== DEBUG: Summarization error: {str(e)} ===")
-        # Fallback: return first part of text if summarization fails
         fallback_length = min(200, len(text))
         return text[:fallback_length] + "..." if len(text) > fallback_length else text
 
